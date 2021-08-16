@@ -4,7 +4,7 @@
     <eAnnotations xmi:id="_fY-2QPteEeucfrCOoWW4aQ" source="http://ns.yatta.de/umllab">
       <contents xmi:type="ecore:EAnnotation" xmi:id="_fY-2QfteEeucfrCOoWW4aQ" source="codegen">
         <details xmi:id="_fY-2QvteEeucfrCOoWW4aQ" key="codegenDirectory" value="/Loja/src"/>
-        <details xmi:id="_fzUB0PteEeucfrCOoWW4aQ" key="AssociatedSourceCode" value="/Loja/src/br/com/projetoloja/objeto/Cliente.java;2938568608/1;/Loja/src/br/com/projetoloja/objeto/Contato.java;2282268701/1;/Loja/src/br/com/projetoloja/objeto/DetalheVenda.java;3023810808/1;/Loja/src/br/com/projetoloja/objeto/Endereco.java;4169200010/1;/Loja/src/br/com/projetoloja/objeto/Funcionario.java;2937484070/1;/Loja/src/br/com/projetoloja/objeto/Produto.java;1913643111/1;/Loja/src/br/com/projetoloja/objeto/Sexo.java;3420742686/1;/Loja/src/br/com/projetoloja/objeto/TipoEndereco.java;2711800569/1;/Loja/src/br/com/projetoloja/objeto/Usuario.java;3301731741/1;/Loja/src/br/com/projetoloja/objeto/Venda.java;452788516/1;/Loja/src/br/com/projetoloja/dao/Conexao.java;3525109560/1;/Loja/src/br/com/projetoloja/dao/ContatoDAO.java;482452441/1;/Loja/src/br/com/projetoloja/dao/ICrud.java;800860190/1;"/>
+        <details xmi:id="_fzUB0PteEeucfrCOoWW4aQ" key="AssociatedSourceCode" value="/Loja/src/br/com/projetoloja/objeto/Cliente.java;2938568608/1;/Loja/src/br/com/projetoloja/objeto/Contato.java;2282268701/1;/Loja/src/br/com/projetoloja/objeto/DetalheVenda.java;3023810808/1;/Loja/src/br/com/projetoloja/objeto/Endereco.java;4169200010/1;/Loja/src/br/com/projetoloja/objeto/Funcionario.java;2937484070/1;/Loja/src/br/com/projetoloja/objeto/Produto.java;1913643111/1;/Loja/src/br/com/projetoloja/objeto/Sexo.java;3420742686/1;/Loja/src/br/com/projetoloja/objeto/TipoEndereco.java;2711800569/1;/Loja/src/br/com/projetoloja/objeto/Usuario.java;3301731741/1;/Loja/src/br/com/projetoloja/objeto/Venda.java;452788516/1;/Loja/src/br/com/projetoloja/dao/Conexao.java;3525109560/1;/Loja/src/br/com/projetoloja/dao/ContatoDAO.java;3868271361/1;/Loja/src/br/com/projetoloja/dao/ICrud.java;800860190/1;"/>
       </contents>
     </eAnnotations>
     <elementImport xmi:id="_fZB5kPteEeucfrCOoWW4aQ">
@@ -648,6 +648,7 @@ iremos defini-la como classe abstrata.
               <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_UaSEUPtvEeucfrCOoWW4aQ" name="cadastrar" specification="_UZ_wcPtvEeucfrCOoWW4aQ">
                 <ownedParameter xmi:id="_UaSEUftvEeucfrCOoWW4aQ" name="objeto" type="_fZWpsPteEeucfrCOoWW4aQ"/>
                 <ownedParameter xmi:id="_UaSEUvtvEeucfrCOoWW4aQ" direction="return">
+                  <name xsi:nil="true"/>
                   <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
                 </ownedParameter>
                 <language>java</language>
@@ -693,28 +694,139 @@ iremos defini-la como classe abstrata.
               </ownedBehavior>
               <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_UaSrYPtvEeucfrCOoWW4aQ" name="listar" specification="_UZKC8PtvEeucfrCOoWW4aQ">
                 <ownedParameter xmi:id="_UaSrYftvEeucfrCOoWW4aQ" type="_fZWpsPteEeucfrCOoWW4aQ" isOrdered="true" direction="return">
+                  <name xsi:nil="true"/>
                   <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_UaSrYvtvEeucfrCOoWW4aQ" value="*"/>
                 </ownedParameter>
                 <language>java</language>
-                <body>return null;
+                <body>List&lt;Contato> listaContatos = new ArrayList&lt;Contato>();
+		try {
+			abrirBanco();
+			String consulta = &quot;Select * from contato&quot;;
+			
+//			preparar o banco de dados para a consulta select de contato
+			pst = conectar.prepareStatement(consulta);
+			
+//			Vamos executar a consulta e o retorno, ou seja, os dados que 
+//			foram encontrados serão alocacos no atributo rs
+			rs = pst.executeQuery();
+			
+//			vamos organizar os dados que retornam do banco de dados na lista
+//			de contato. Iremos usar um laço para ler todo o conteúdo de dados
+//			que agora está em rs.
+			while(rs.next()) {
+				listaContatos.add(
+						new Contato(
+								rs.getInt(0), 
+								rs.getString(1), 
+								rs.getString(2))
+						);
+			}
+			
+		}
+		catch(SQLException e) {
+//			vamos imprimir a pilha de errors do sql, caso ocorra
+			e.printStackTrace();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			fecharBanco();
+		}
+				
+		return listaContatos;
 	</body>
               </ownedBehavior>
               <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_UaSrY_tvEeucfrCOoWW4aQ" name="pesquisar" specification="_UaA-kvtvEeucfrCOoWW4aQ">
                 <ownedParameter xmi:id="_UaSrZPtvEeucfrCOoWW4aQ" name="objeto" type="_fZWpsPteEeucfrCOoWW4aQ"/>
                 <ownedParameter xmi:id="_UaSrZftvEeucfrCOoWW4aQ" type="_fZWpsPteEeucfrCOoWW4aQ" isOrdered="true" direction="return">
+                  <name xsi:nil="true"/>
                   <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_UaSrZvtvEeucfrCOoWW4aQ" value="*"/>
                 </ownedParameter>
                 <language>java</language>
-                <body>return null;
+                <body>List&lt;Contato> listaContatos = new ArrayList&lt;Contato>();
+		 
+		try {
+			abrirBanco();
+			
+			String sqlId = &quot;Select * from contato where idcontato=?&quot;;
+			
+			String sqlTel = &quot;Select * from contato where telefone like ?&quot;;
+			
+			String sqlEmail = &quot;Select * from contato where email=?&quot;;
+			
+			if(objeto.getEmail()==null &amp;&amp; objeto.getTelefone()==null) {
+				pst = conectar.prepareStatement(sqlId);
+				pst.setInt(1, objeto.getIdContato());
+			}
+			else if(objeto.getEmail()==null) {
+				pst = conectar.prepareStatement(sqlTel);
+				pst.setString(1, objeto.getTelefone());
+			}
+			else {
+				pst = conectar.prepareStatement(sqlEmail);
+				pst.setString(1, objeto.getEmail());
+			}
+			
+			rs = pst.executeQuery();
+			while(rs.next()) {
+				listaContatos.add(
+						new Contato(
+								rs.getInt(0),
+								rs.getString(1),
+								rs.getString(2)
+								)
+						);
+			}			
+		}
+		catch(SQLException e) {
+			e.printStackTrace();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			fecharBanco();
+		}	
+		
+		return listaContatos;
 	</body>
               </ownedBehavior>
               <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_UaTScPtvEeucfrCOoWW4aQ" name="atualizar" specification="_UaCzwPtvEeucfrCOoWW4aQ">
                 <ownedParameter xmi:id="_UaTScftvEeucfrCOoWW4aQ" name="objeto" type="_fZWpsPteEeucfrCOoWW4aQ"/>
                 <ownedParameter xmi:id="_UaTScvtvEeucfrCOoWW4aQ" direction="return">
+                  <name xsi:nil="true"/>
                   <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
                 </ownedParameter>
                 <language>java</language>
-                <body>return null;
+                <body>String msg = &quot;&quot;;
+		try {
+			abrirBanco();
+			String sql = &quot;update contato set telefone=?,email=? where idContato=?&quot;;
+			pst = conectar.prepareStatement(sql);
+			
+			pst.setString(1, objeto.getTelefone());
+			pst.setString(2, objeto.getEmail());
+			pst.setInt(3, objeto.getIdContato());
+			
+			int r = pst.executeUpdate();
+			
+			if( r > 0)
+				msg = &quot;Contato atualizado com sucesso!&quot;;
+			else
+				msg = &quot;Contato não atualizado.&quot;;
+		}
+		catch(SQLException e) {
+			e.printStackTrace();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			fecharBanco();
+		}
+		
+		return msg;
 	</body>
               </ownedBehavior>
               <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_UaTSc_tvEeucfrCOoWW4aQ" name="apagar" specification="_UZOUYPtvEeucfrCOoWW4aQ">
@@ -722,10 +834,32 @@ iremos defini-la como classe abstrata.
                   <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/JavaPrimitiveTypes.library.uml#int"/>
                 </ownedParameter>
                 <ownedParameter xmi:id="_UaTSdftvEeucfrCOoWW4aQ" direction="return">
+                  <name xsi:nil="true"/>
                   <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
                 </ownedParameter>
                 <language>java</language>
-                <body>return null;
+                <body>String msg = &quot;&quot;;
+		try {
+			abrirBanco();
+			String sql = &quot;delete from contato where idcontato=?&quot;;
+			pst = conectar.prepareStatement(sql);
+			pst.setInt(1, id);
+			int r = pst.executeUpdate();
+			if( r > 0)
+				msg = &quot;O contato foi apagado.&quot;;
+			else
+				msg = &quot;Contato não apagado&quot;;
+		}
+		catch(SQLException e) {
+			e.printStackTrace();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			fecharBanco();
+		}
+		return msg;
 	</body>
               </ownedBehavior>
               <ownedOperation xmi:id="_UZKC8PtvEeucfrCOoWW4aQ" name="listar" method="_UaSrYPtvEeucfrCOoWW4aQ">
@@ -811,6 +945,7 @@ iremos defini-la como classe abstrata.
       <packagedElement xmi:type="uml:Package" xmi:id="_fXu5EfteEeucfrCOoWW4aQ" name="util">
         <packagedElement xmi:type="uml:DataType" xmi:id="_fcHCwPteEeucfrCOoWW4aQ" name="Date"/>
         <packagedElement xmi:type="uml:Interface" xmi:id="_UZ30oPtvEeucfrCOoWW4aQ" name="List"/>
+        <packagedElement xmi:type="uml:Class" xmi:id="_fkJtAPt1EeucfrCOoWW4aQ" name="ArrayList"/>
       </packagedElement>
       <packagedElement xmi:type="uml:Package" xmi:id="_UYy2kPtvEeucfrCOoWW4aQ" name="sql">
         <packagedElement xmi:type="uml:Interface" xmi:id="_UZvRwPtvEeucfrCOoWW4aQ" name="Connection"/>
@@ -872,4 +1007,5 @@ iremos defini-la como classe abstrata.
   <UMLLabProfile:Reference xmi:id="_UaYK8PtvEeucfrCOoWW4aQ" base_Element="_UaW80PtvEeucfrCOoWW4aQ"/>
   <UMLLabProfile:Reference xmi:id="_UaYyAPtvEeucfrCOoWW4aQ" base_Element="_UaYK8ftvEeucfrCOoWW4aQ"/>
   <UMLLabProfile:Reference xmi:id="_UaaAIPtvEeucfrCOoWW4aQ" base_Element="_UaZZEPtvEeucfrCOoWW4aQ"/>
+  <UMLLabProfile:Reference xmi:id="_fkK7IPt1EeucfrCOoWW4aQ" base_Element="_fkJtAPt1EeucfrCOoWW4aQ"/>
 </xmi:XMI>
