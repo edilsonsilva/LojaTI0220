@@ -6,7 +6,6 @@ import java.util.List;
 
 import br.com.projetoloja.objeto.Endereco;
 import br.com.projetoloja.objeto.TipoEndereco;
-import br.com.projetoloja.objeto.Usuario;
 
 public class EnderecoDAO extends Conexao implements ICrud<Endereco>{
 

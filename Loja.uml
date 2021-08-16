@@ -4,7 +4,7 @@
     <eAnnotations xmi:id="_fY-2QPteEeucfrCOoWW4aQ" source="http://ns.yatta.de/umllab">
       <contents xmi:type="ecore:EAnnotation" xmi:id="_fY-2QfteEeucfrCOoWW4aQ" source="codegen">
         <details xmi:id="_fY-2QvteEeucfrCOoWW4aQ" key="codegenDirectory" value="/Loja/src"/>
-        <details xmi:id="_fzUB0PteEeucfrCOoWW4aQ" key="AssociatedSourceCode" value="/Loja/src/br/com/projetoloja/dao/UsuarioDAO.java;1175719665/1;"/>
+        <details xmi:id="_fzUB0PteEeucfrCOoWW4aQ" key="AssociatedSourceCode" value="/Loja/src/br/com/projetoloja/dao/UsuarioDAO.java;1175719665/1;/Loja/src/br/com/projetoloja/dao/ClienteDAO.java;1208415342/1;/Loja/src/br/com/projetoloja/dao/EnderecoDAO.java;1137422416/1;"/>
       </contents>
     </eAnnotations>
     <elementImport xmi:id="_fZB5kPteEeucfrCOoWW4aQ">
@@ -1169,6 +1169,493 @@ iremos defini-la como classe abstrata.
                 </ownedParameter>
               </ownedOperation>
             </packagedElement>
+            <packagedElement xmi:type="uml:Class" xmi:id="_-As0IP6YEeuMjPmZVt28Fw" name="ClienteDAO">
+              <generalization xmi:id="_-BKuMv6YEeuMjPmZVt28Fw" general="_UZFKcPtvEeucfrCOoWW4aQ"/>
+              <interfaceRealization xmi:id="_-BEnkP6YEeuMjPmZVt28Fw" client="_-As0IP6YEeuMjPmZVt28Fw" supplier="_UZTM4PtvEeucfrCOoWW4aQ" contract="_UZTM4PtvEeucfrCOoWW4aQ"/>
+              <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_-BLVQP6YEeuMjPmZVt28Fw" name="cadastrar" specification="_-BGcwP6YEeuMjPmZVt28Fw">
+                <ownedParameter xmi:id="_-BLVQf6YEeuMjPmZVt28Fw" name="objeto" type="_fY0eMPteEeucfrCOoWW4aQ"/>
+                <ownedParameter xmi:id="_-BLVQv6YEeuMjPmZVt28Fw" direction="return">
+                  <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+                </ownedParameter>
+                <language>java</language>
+                <body>String msg = &quot;&quot;;
+		try {
+			abrirBanco();
+			String sql = &quot;insert into cliente(nomecliente,cpf,sexo,idusuario,idcontato,idendereco)values(?,?,?,?,?,?)&quot;;
+			//preparação para execução da consulta
+			pst = conectar.prepareStatement(sql);
+			
+			//passagem dos parametros para a execução da consulta. 
+			//os parametros irão entrar no lugar dos ponto de interrogação
+			pst.setString(1,objeto.getNomeCliente());
+			pst.setString(2, objeto.getCpf());
+			pst.setObject(3,objeto.getSexo());
+			pst.setInt(4, objeto.getUsuario().getIdUsuario());
+			pst.setInt(5, objeto.getContato().getIdContato());
+			pst.setInt(6, objeto.getEndereco().getIdEndereco());
+			
+			int r = pst.executeUpdate();
+			
+			if(r>0)
+				msg=&quot;Cadastro realizado com sucesso!&quot;;
+			else
+				msg=&quot;Não foi possível cadastrar o cliente&quot;;			
+		}
+		catch(SQLException e) {
+			msg = &quot;Erro ao tentar cadastrar o cliente. &quot;+e.getMessage();
+		}
+		catch (Exception e) {
+			msg = &quot;Erro inesperado. &quot;+e.getMessage();
+		}
+		finally {
+			fecharBanco();
+		}
+		
+		return msg;
+	</body>
+              </ownedBehavior>
+              <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_-BL8UP6YEeuMjPmZVt28Fw" name="listar" specification="_-Av3cP6YEeuMjPmZVt28Fw">
+                <ownedParameter xmi:id="_-BL8Uf6YEeuMjPmZVt28Fw" type="_fY0eMPteEeucfrCOoWW4aQ" isOrdered="true" direction="return">
+                  <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_-BL8Uv6YEeuMjPmZVt28Fw" value="*"/>
+                </ownedParameter>
+                <language>java</language>
+                <body>List&lt;Cliente> listaCliente = new ArrayList&lt;Cliente>();
+		try {
+			abrirBanco();
+			String sql = &quot;Select * from cliente&quot;;
+			pst = conectar.prepareStatement(sql);
+			rs = pst.executeQuery();
+			
+			//adicionar os dados dos usuários na lista
+			while(rs.next()) {
+				listaCliente.add(
+						new Cliente(
+								rs.getInt(0),
+								rs.getString(1),
+								rs.getString(2),
+								(Sexo) rs.getObject(3),
+								rs.getDate(4),
+								(Usuario) rs.getObject(5),
+								(Contato) rs.getObject(6),
+								(Endereco) rs.getObject(7)
+								)						
+						);
+			}			
+		}
+		catch(SQLException e) {
+			e.printStackTrace();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			fecharBanco();
+		}
+		
+		return listaCliente;
+	</body>
+              </ownedBehavior>
+              <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_-BL8U_6YEeuMjPmZVt28Fw" name="pesquisar" specification="_-BHq4v6YEeuMjPmZVt28Fw">
+                <ownedParameter xmi:id="_-BL8VP6YEeuMjPmZVt28Fw" name="objeto" type="_fY0eMPteEeucfrCOoWW4aQ"/>
+                <ownedParameter xmi:id="_-BL8Vf6YEeuMjPmZVt28Fw" type="_fY0eMPteEeucfrCOoWW4aQ" isOrdered="true" direction="return">
+                  <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_-BL8Vv6YEeuMjPmZVt28Fw" value="*"/>
+                </ownedParameter>
+                <language>java</language>
+                <body>List&lt;Cliente> listaCliente = new ArrayList&lt;Cliente>();
+		try {
+			abrirBanco();
+			String sqlId = &quot;Select * from cliente where idCliente = ?&quot;;
+			
+			String sqlNome = &quot;Select * from cliente where nomecliente like ?&quot;;
+			
+			if(objeto.getNomeCliente()==null) {
+				pst = conectar.prepareStatement(sqlId);
+				pst.setInt(1, objeto.getIdCliente());
+			}
+			else{
+				pst=conectar.prepareStatement(sqlNome);
+				pst.setString(1, objeto.getNomeCliente());
+			}
+				
+				rs = pst.executeQuery();
+			
+			//adicionar os dados dos usuários na lista
+			while(rs.next()) {
+				listaCliente.add(
+						new Cliente(
+								rs.getInt(0),
+								rs.getString(1),
+								rs.getString(2),
+								(Sexo) rs.getObject(3),
+								rs.getDate(4),
+								(Usuario) rs.getObject(5),
+								(Contato) rs.getObject(6),
+								(Endereco) rs.getObject(7)
+								)						
+						);
+			}			
+		}
+		catch(SQLException e) {
+			e.printStackTrace();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			fecharBanco();
+		}
+		
+		return listaCliente;
+	</body>
+              </ownedBehavior>
+              <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_-BMjYP6YEeuMjPmZVt28Fw" name="atualizar" specification="_-BJgEv6YEeuMjPmZVt28Fw">
+                <ownedParameter xmi:id="_-BMjYf6YEeuMjPmZVt28Fw" name="objeto" type="_fY0eMPteEeucfrCOoWW4aQ"/>
+                <ownedParameter xmi:id="_-BMjYv6YEeuMjPmZVt28Fw" direction="return">
+                  <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+                </ownedParameter>
+                <language>java</language>
+                <body>String msg = &quot;&quot;;
+		try {
+			abrirBanco();
+			String sql = &quot;update cliente set nomecliente=? where idCliente = ?&quot;;
+			//preparação para execução da consulta
+			pst = conectar.prepareStatement(sql);
+			
+			//passagem dos parametros para a execução da consulta. 
+			//os parametros irão entrar no lugar dos ponto de interrogação
+			pst.setString(1,objeto.getNomeCliente());
+			pst.setInt(2, objeto.getIdCliente());
+			
+			int r = pst.executeUpdate();
+			
+			if(r>0)
+				msg=&quot;Atualização realizada com sucesso!&quot;;
+			else
+				msg=&quot;Não foi possível atualizar o cliente&quot;;			
+		}
+		catch(SQLException e) {
+			msg = &quot;Erro ao tentar atualizar o cliente. &quot;+e.getMessage();
+		}
+		catch (Exception e) {
+			msg = &quot;Erro inesperado. &quot;+e.getMessage();
+		}
+		finally {
+			fecharBanco();
+		}
+		
+		return msg;
+	</body>
+              </ownedBehavior>
+              <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_-BMjY_6YEeuMjPmZVt28Fw" name="apagar" specification="_-AyTsP6YEeuMjPmZVt28Fw">
+                <ownedParameter xmi:id="_-BMjZP6YEeuMjPmZVt28Fw" name="id">
+                  <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/JavaPrimitiveTypes.library.uml#int"/>
+                </ownedParameter>
+                <ownedParameter xmi:id="_-BMjZf6YEeuMjPmZVt28Fw" direction="return">
+                  <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+                </ownedParameter>
+                <language>java</language>
+                <body>String msg = &quot;&quot;;
+		try {
+			abrirBanco();
+			String sql = &quot;Delete from cliente where idCliente=?&quot;;
+			pst = conectar.prepareStatement(sql);
+			pst.setInt(1, id);
+			int r = pst.executeUpdate();
+			if(r > 0)
+				msg = &quot;Cliente apagado com sucesso!&quot;;
+			else
+				msg=&quot;Não foi possível apagar o cliente&quot;;			
+		}
+		catch(SQLException e) {
+			msg = &quot;Erro ao tentar apagar o cliente. &quot;+e.getMessage();
+		}
+		catch(Exception e) {
+			msg = &quot;Erro inesperado. &quot;+e.getMessage();
+		}
+		finally {
+			fecharBanco();
+		}
+		
+		return msg;
+	</body>
+              </ownedBehavior>
+              <ownedOperation xmi:id="_-Av3cP6YEeuMjPmZVt28Fw" name="listar" method="_-BL8UP6YEeuMjPmZVt28Fw">
+                <ownedParameter xmi:id="_-Av3cf6YEeuMjPmZVt28Fw" type="_fY0eMPteEeucfrCOoWW4aQ" isOrdered="true" direction="return">
+                  <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_-AwegP6YEeuMjPmZVt28Fw" value="*"/>
+                </ownedParameter>
+              </ownedOperation>
+              <ownedOperation xmi:id="_-AyTsP6YEeuMjPmZVt28Fw" name="apagar" method="_-BMjY_6YEeuMjPmZVt28Fw">
+                <ownedParameter xmi:id="_-AyTsf6YEeuMjPmZVt28Fw" name="id">
+                  <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/JavaPrimitiveTypes.library.uml#int"/>
+                </ownedParameter>
+                <ownedParameter xmi:id="_-Ay6wP6YEeuMjPmZVt28Fw" direction="return">
+                  <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+                </ownedParameter>
+              </ownedOperation>
+              <ownedOperation xmi:id="_-BGcwP6YEeuMjPmZVt28Fw" name="cadastrar" method="_-BLVQP6YEeuMjPmZVt28Fw">
+                <ownedParameter xmi:id="_-BGcwf6YEeuMjPmZVt28Fw" name="objeto" type="_fY0eMPteEeucfrCOoWW4aQ"/>
+                <ownedParameter xmi:id="_-BHD0P6YEeuMjPmZVt28Fw" direction="return">
+                  <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+                </ownedParameter>
+              </ownedOperation>
+              <ownedOperation xmi:id="_-BHq4v6YEeuMjPmZVt28Fw" name="pesquisar" method="_-BL8U_6YEeuMjPmZVt28Fw">
+                <ownedParameter xmi:id="_-BIR8P6YEeuMjPmZVt28Fw" name="objeto" type="_fY0eMPteEeucfrCOoWW4aQ"/>
+                <ownedParameter xmi:id="_-BIR8f6YEeuMjPmZVt28Fw" type="_fY0eMPteEeucfrCOoWW4aQ" isOrdered="true" direction="return">
+                  <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_-BIR8v6YEeuMjPmZVt28Fw" value="*"/>
+                </ownedParameter>
+              </ownedOperation>
+              <ownedOperation xmi:id="_-BJgEv6YEeuMjPmZVt28Fw" name="atualizar" method="_-BMjYP6YEeuMjPmZVt28Fw">
+                <ownedParameter xmi:id="_-BJgE_6YEeuMjPmZVt28Fw" name="objeto" type="_fY0eMPteEeucfrCOoWW4aQ"/>
+                <ownedParameter xmi:id="_-BKHIP6YEeuMjPmZVt28Fw" direction="return">
+                  <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+                </ownedParameter>
+              </ownedOperation>
+            </packagedElement>
+            <packagedElement xmi:type="uml:Class" xmi:id="_--fSEP6YEeuMjPmZVt28Fw" name="EnderecoDAO">
+              <generalization xmi:id="_--_BUv6YEeuMjPmZVt28Fw" general="_UZFKcPtvEeucfrCOoWW4aQ"/>
+              <interfaceRealization xmi:id="_--5hwP6YEeuMjPmZVt28Fw" client="_--fSEP6YEeuMjPmZVt28Fw" supplier="_UZTM4PtvEeucfrCOoWW4aQ" contract="_UZTM4PtvEeucfrCOoWW4aQ"/>
+              <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_--_oYP6YEeuMjPmZVt28Fw" name="cadastrar" specification="_--6v4f6YEeuMjPmZVt28Fw">
+                <ownedParameter xmi:id="_--_oYf6YEeuMjPmZVt28Fw" name="objeto" type="_fZjeAPteEeucfrCOoWW4aQ"/>
+                <ownedParameter xmi:id="_--_oYv6YEeuMjPmZVt28Fw" direction="return">
+                  <name xsi:nil="true"/>
+                  <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+                </ownedParameter>
+                <language>java</language>
+                <body>String msg = &quot;&quot;;
+		try {
+			abrirBanco();
+			String sql = &quot;insert into endereco(tipo,logradouro,numero,complemento,cep)values(?,?,?,?,?)&quot;;
+			//preparação para execução da consulta
+			pst = conectar.prepareStatement(sql);
+			
+			//passagem dos parametros para a execução da consulta. 
+			//os parametros irão entrar no lugar dos ponto de interrogação
+			pst.setObject(1,objeto.getTipo());
+			pst.setString(2, objeto.getLogradouro());
+			pst.setString(3,objeto.getNumero());
+			pst.setString(4, objeto.getComplemento());
+			pst.setString(5, objeto.getCep());
+			
+			int r = pst.executeUpdate();
+			
+			if(r>0)
+				msg=&quot;Cadastro realizado com sucesso!&quot;;
+			else
+				msg=&quot;Não foi possível cadastrar o endereço&quot;;			
+		}
+		catch(SQLException e) {
+			msg = &quot;Erro ao tentar cadastrar o endereço. &quot;+e.getMessage();
+		}
+		catch (Exception e) {
+			msg = &quot;Erro inesperado. &quot;+e.getMessage();
+		}
+		finally {
+			fecharBanco();
+		}
+		
+		return msg;
+	</body>
+              </ownedBehavior>
+              <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_--_oY_6YEeuMjPmZVt28Fw" name="listar" specification="_--hHQP6YEeuMjPmZVt28Fw">
+                <ownedParameter xmi:id="_--_oZP6YEeuMjPmZVt28Fw" type="_fZjeAPteEeucfrCOoWW4aQ" isOrdered="true" direction="return">
+                  <name xsi:nil="true"/>
+                  <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_--_oZf6YEeuMjPmZVt28Fw" value="*"/>
+                </ownedParameter>
+                <language>java</language>
+                <body>List&lt;Endereco> listaEndereco = new ArrayList&lt;Endereco>();
+		try {
+			abrirBanco();
+			String sql = &quot;Select * from endereco&quot;;
+			pst = conectar.prepareStatement(sql);
+			rs = pst.executeQuery();
+			
+			//adicionar os dados dos usuários na lista
+			while(rs.next()) {
+				listaEndereco.add(
+						new Endereco(
+								rs.getInt(0),
+								(TipoEndereco) rs.getObject(1),
+								rs.getString(2),
+								rs.getString(3),
+								rs.getString(4),
+								rs.getString(5)
+								)						
+						);
+			}			
+		}
+		catch(SQLException e) {
+			e.printStackTrace();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			fecharBanco();
+		}
+		
+		return listaEndereco;
+	</body>
+              </ownedBehavior>
+              <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_-_APcP6YEeuMjPmZVt28Fw" name="pesquisar" specification="_--7-Av6YEeuMjPmZVt28Fw">
+                <ownedParameter xmi:id="_-_APcf6YEeuMjPmZVt28Fw" name="objeto" type="_fZjeAPteEeucfrCOoWW4aQ"/>
+                <ownedParameter xmi:id="_-_APcv6YEeuMjPmZVt28Fw" type="_fZjeAPteEeucfrCOoWW4aQ" isOrdered="true" direction="return">
+                  <name xsi:nil="true"/>
+                  <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_-_APc_6YEeuMjPmZVt28Fw" value="*"/>
+                </ownedParameter>
+                <language>java</language>
+                <body>List&lt;Endereco> listaEndereco = new ArrayList&lt;Endereco>();
+		try {
+			abrirBanco();
+			String sqlId = &quot;Select * from endereco where idendereco=?&quot;;
+			String sqlLog = &quot;Select * from endereco where logradouro like ?&quot;;
+			
+			if(objeto.getLogradouro()==null) {
+				pst = conectar.prepareStatement(sqlId);
+				pst.setInt(1, objeto.getIdEndereco());
+			}
+			else {
+				pst = conectar.prepareStatement(sqlLog);
+				pst.setString(1,objeto.getLogradouro());
+			}			
+				
+			rs = pst.executeQuery();
+			
+			//adicionar os dados dos usuários na lista
+			while(rs.next()) {
+				listaEndereco.add(
+						new Endereco(
+								rs.getInt(0),
+								(TipoEndereco) rs.getObject(1),
+								rs.getString(2),
+								rs.getString(3),
+								rs.getString(4),
+								rs.getString(5)
+								)						
+						);
+			}			
+		}
+		catch(SQLException e) {
+			e.printStackTrace();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			fecharBanco();
+		}
+		
+		return listaEndereco;
+	</body>
+              </ownedBehavior>
+              <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_-_APdP6YEeuMjPmZVt28Fw" name="atualizar" specification="_--9zMP6YEeuMjPmZVt28Fw">
+                <ownedParameter xmi:id="_-_APdf6YEeuMjPmZVt28Fw" name="objeto" type="_fZjeAPteEeucfrCOoWW4aQ"/>
+                <ownedParameter xmi:id="_-_APdv6YEeuMjPmZVt28Fw" direction="return">
+                  <name xsi:nil="true"/>
+                  <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+                </ownedParameter>
+                <language>java</language>
+                <body>String msg = &quot;&quot;;
+		try {
+			abrirBanco();
+			String sql = &quot;update endereco set tipo=?,logradouro=?,numero=?,complemento=?,cep=? where idEndereco=?&quot;;
+			//preparação para execução da consulta
+			pst = conectar.prepareStatement(sql);
+			
+			//passagem dos parametros para a execução da consulta. 
+			//os parametros irão entrar no lugar dos ponto de interrogação
+			pst.setObject(1,objeto.getTipo());
+			pst.setString(2, objeto.getLogradouro());
+			pst.setString(3,objeto.getNumero());
+			pst.setString(4, objeto.getComplemento());
+			pst.setString(5, objeto.getCep());
+			pst.setInt(6, objeto.getIdEndereco());
+			
+			int r = pst.executeUpdate();
+			
+			if(r>0)
+				msg=&quot;Atualização realizada com sucesso!&quot;;
+			else
+				msg=&quot;Não foi possível atualizar o endereço&quot;;			
+		}
+		catch(SQLException e) {
+			msg = &quot;Erro ao tentar atualizar o endereço. &quot;+e.getMessage();
+		}
+		catch (Exception e) {
+			msg = &quot;Erro inesperado. &quot;+e.getMessage();
+		}
+		finally {
+			fecharBanco();
+		}
+		
+		return msg;
+	</body>
+              </ownedBehavior>
+              <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_-_APd_6YEeuMjPmZVt28Fw" name="apagar" specification="_--kxoP6YEeuMjPmZVt28Fw">
+                <ownedParameter xmi:id="_-_APeP6YEeuMjPmZVt28Fw" name="id">
+                  <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/JavaPrimitiveTypes.library.uml#int"/>
+                </ownedParameter>
+                <ownedParameter xmi:id="_-_APef6YEeuMjPmZVt28Fw" direction="return">
+                  <name xsi:nil="true"/>
+                  <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+                </ownedParameter>
+                <language>java</language>
+                <body>String msg = &quot;&quot;;
+		try {
+			abrirBanco();
+			String sql = &quot;Delete from endereco where idEndereco=?&quot;;
+			pst = conectar.prepareStatement(sql);
+			pst.setInt(1, id);
+			int r = pst.executeUpdate();
+			if(r > 0)
+				msg = &quot;Endereço apagado com sucesso!&quot;;
+			else
+				msg=&quot;Não foi possível apagar o endereço&quot;;			
+		}
+		catch(SQLException e) {
+			msg = &quot;Erro ao tentar apagar o endereço. &quot;+e.getMessage();
+		}
+		catch(Exception e) {
+			msg = &quot;Erro inesperado. &quot;+e.getMessage();
+		}
+		finally {
+			fecharBanco();
+		}
+		
+		return msg;
+	</body>
+              </ownedBehavior>
+              <ownedOperation xmi:id="_--hHQP6YEeuMjPmZVt28Fw" name="listar" method="_--_oY_6YEeuMjPmZVt28Fw">
+                <ownedParameter xmi:id="_--huUP6YEeuMjPmZVt28Fw" type="_fZjeAPteEeucfrCOoWW4aQ" isOrdered="true" direction="return">
+                  <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_--huUf6YEeuMjPmZVt28Fw" value="*"/>
+                </ownedParameter>
+              </ownedOperation>
+              <ownedOperation xmi:id="_--kxoP6YEeuMjPmZVt28Fw" name="apagar" method="_-_APd_6YEeuMjPmZVt28Fw">
+                <ownedParameter xmi:id="_--kxof6YEeuMjPmZVt28Fw" name="id">
+                  <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/JavaPrimitiveTypes.library.uml#int"/>
+                </ownedParameter>
+                <ownedParameter xmi:id="_--lYsP6YEeuMjPmZVt28Fw" direction="return">
+                  <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+                </ownedParameter>
+              </ownedOperation>
+              <ownedOperation xmi:id="_--6v4f6YEeuMjPmZVt28Fw" name="cadastrar" method="_--_oYP6YEeuMjPmZVt28Fw">
+                <ownedParameter xmi:id="_--6v4v6YEeuMjPmZVt28Fw" name="objeto" type="_fZjeAPteEeucfrCOoWW4aQ"/>
+                <ownedParameter xmi:id="_--7W8P6YEeuMjPmZVt28Fw" direction="return">
+                  <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+                </ownedParameter>
+              </ownedOperation>
+              <ownedOperation xmi:id="_--7-Av6YEeuMjPmZVt28Fw" name="pesquisar" method="_-_APcP6YEeuMjPmZVt28Fw">
+                <ownedParameter xmi:id="_--7-A_6YEeuMjPmZVt28Fw" name="objeto" type="_fZjeAPteEeucfrCOoWW4aQ"/>
+                <ownedParameter xmi:id="_--8lEP6YEeuMjPmZVt28Fw" type="_fZjeAPteEeucfrCOoWW4aQ" isOrdered="true" direction="return">
+                  <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_--8lEf6YEeuMjPmZVt28Fw" value="*"/>
+                </ownedParameter>
+              </ownedOperation>
+              <ownedOperation xmi:id="_--9zMP6YEeuMjPmZVt28Fw" name="atualizar" method="_-_APdP6YEeuMjPmZVt28Fw">
+                <ownedParameter xmi:id="_--9zMf6YEeuMjPmZVt28Fw" name="objeto" type="_fZjeAPteEeucfrCOoWW4aQ"/>
+                <ownedParameter xmi:id="_--9zMv6YEeuMjPmZVt28Fw" direction="return">
+                  <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+                </ownedParameter>
+              </ownedOperation>
+            </packagedElement>
           </packagedElement>
         </packagedElement>
       </packagedElement>
@@ -1260,5 +1747,47 @@ iremos defini-la como classe abstrata.
   <UMLLabProfile:LegacyStyledElement xmi:id="_FqfGcP6NEeuMjPmZVt28Fw" base_Element="_Fqd4UP6NEeuMjPmZVt28Fw"/>
   <UMLLabProfile:Annotations xmi:id="_FqftgP6NEeuMjPmZVt28Fw" base_Element="_Fqd4UP6NEeuMjPmZVt28Fw">
     <annotations xmi:id="_Fqftgf6NEeuMjPmZVt28Fw" name="Override"/>
+  </UMLLabProfile:Annotations>
+  <UMLLabProfile:LegacyStyledElement xmi:id="_-Awegf6YEeuMjPmZVt28Fw" base_Element="_-Av3cP6YEeuMjPmZVt28Fw"/>
+  <UMLLabProfile:Annotations xmi:id="_-AxFkP6YEeuMjPmZVt28Fw" base_Element="_-Av3cP6YEeuMjPmZVt28Fw">
+    <annotations xmi:id="_-AxFkf6YEeuMjPmZVt28Fw" name="Override"/>
+  </UMLLabProfile:Annotations>
+  <UMLLabProfile:LegacyStyledElement xmi:id="_-Ay6wf6YEeuMjPmZVt28Fw" base_Element="_-AyTsP6YEeuMjPmZVt28Fw"/>
+  <UMLLabProfile:Annotations xmi:id="_-Azh0P6YEeuMjPmZVt28Fw" base_Element="_-AyTsP6YEeuMjPmZVt28Fw">
+    <annotations xmi:id="_-Azh0f6YEeuMjPmZVt28Fw" name="Override"/>
+  </UMLLabProfile:Annotations>
+  <UMLLabProfile:Generics xmi:id="_-BF1sP6YEeuMjPmZVt28Fw" genericsValue="Cliente" base_Element="_-BEnkP6YEeuMjPmZVt28Fw"/>
+  <UMLLabProfile:LegacyStyledElement xmi:id="_-BHD0f6YEeuMjPmZVt28Fw" base_Element="_-BGcwP6YEeuMjPmZVt28Fw"/>
+  <UMLLabProfile:Annotations xmi:id="_-BHq4P6YEeuMjPmZVt28Fw" base_Element="_-BGcwP6YEeuMjPmZVt28Fw">
+    <annotations xmi:id="_-BHq4f6YEeuMjPmZVt28Fw" name="Override"/>
+  </UMLLabProfile:Annotations>
+  <UMLLabProfile:LegacyStyledElement xmi:id="_-BI5AP6YEeuMjPmZVt28Fw" base_Element="_-BHq4v6YEeuMjPmZVt28Fw"/>
+  <UMLLabProfile:Annotations xmi:id="_-BJgEP6YEeuMjPmZVt28Fw" base_Element="_-BHq4v6YEeuMjPmZVt28Fw">
+    <annotations xmi:id="_-BJgEf6YEeuMjPmZVt28Fw" name="Override"/>
+  </UMLLabProfile:Annotations>
+  <UMLLabProfile:LegacyStyledElement xmi:id="_-BKHIf6YEeuMjPmZVt28Fw" base_Element="_-BJgEv6YEeuMjPmZVt28Fw"/>
+  <UMLLabProfile:Annotations xmi:id="_-BKuMP6YEeuMjPmZVt28Fw" base_Element="_-BJgEv6YEeuMjPmZVt28Fw">
+    <annotations xmi:id="_-BKuMf6YEeuMjPmZVt28Fw" name="Override"/>
+  </UMLLabProfile:Annotations>
+  <UMLLabProfile:LegacyStyledElement xmi:id="_--iVYP6YEeuMjPmZVt28Fw" base_Element="_--hHQP6YEeuMjPmZVt28Fw"/>
+  <UMLLabProfile:Annotations xmi:id="_--jjgP6YEeuMjPmZVt28Fw" base_Element="_--hHQP6YEeuMjPmZVt28Fw">
+    <annotations xmi:id="_--jjgf6YEeuMjPmZVt28Fw" name="Override"/>
+  </UMLLabProfile:Annotations>
+  <UMLLabProfile:LegacyStyledElement xmi:id="_--l_wP6YEeuMjPmZVt28Fw" base_Element="_--kxoP6YEeuMjPmZVt28Fw"/>
+  <UMLLabProfile:Annotations xmi:id="_--mm0P6YEeuMjPmZVt28Fw" base_Element="_--kxoP6YEeuMjPmZVt28Fw">
+    <annotations xmi:id="_--mm0f6YEeuMjPmZVt28Fw" name="Override"/>
+  </UMLLabProfile:Annotations>
+  <UMLLabProfile:Generics xmi:id="_--6v4P6YEeuMjPmZVt28Fw" genericsValue="Endereco" base_Element="_--5hwP6YEeuMjPmZVt28Fw"/>
+  <UMLLabProfile:LegacyStyledElement xmi:id="_--7W8f6YEeuMjPmZVt28Fw" base_Element="_--6v4f6YEeuMjPmZVt28Fw"/>
+  <UMLLabProfile:Annotations xmi:id="_--7-AP6YEeuMjPmZVt28Fw" base_Element="_--6v4f6YEeuMjPmZVt28Fw">
+    <annotations xmi:id="_--7-Af6YEeuMjPmZVt28Fw" name="Override"/>
+  </UMLLabProfile:Annotations>
+  <UMLLabProfile:LegacyStyledElement xmi:id="_--9MIP6YEeuMjPmZVt28Fw" base_Element="_--7-Av6YEeuMjPmZVt28Fw"/>
+  <UMLLabProfile:Annotations xmi:id="_--9MIf6YEeuMjPmZVt28Fw" base_Element="_--7-Av6YEeuMjPmZVt28Fw">
+    <annotations xmi:id="_--9MIv6YEeuMjPmZVt28Fw" name="Override"/>
+  </UMLLabProfile:Annotations>
+  <UMLLabProfile:LegacyStyledElement xmi:id="_---aQP6YEeuMjPmZVt28Fw" base_Element="_--9zMP6YEeuMjPmZVt28Fw"/>
+  <UMLLabProfile:Annotations xmi:id="_--_BUP6YEeuMjPmZVt28Fw" base_Element="_--9zMP6YEeuMjPmZVt28Fw">
+    <annotations xmi:id="_--_BUf6YEeuMjPmZVt28Fw" name="Override"/>
   </UMLLabProfile:Annotations>
 </xmi:XMI>
