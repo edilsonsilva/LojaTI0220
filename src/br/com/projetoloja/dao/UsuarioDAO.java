@@ -1,6 +1,7 @@
 package br.com.projetoloja.dao;
 
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +17,7 @@ public class UsuarioDAO extends Conexao implements ICrud<Usuario>{
 			abrirBanco();
 			String sql = "insert into usuario(nomeusuario,senha,foto)values(?,?,?)";
 			//preparação para execução da consulta
-			pst = conectar.prepareStatement(sql);
+			pst = conectar.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
 			
 			//passagem dos parametros para a execução da consulta. 
 			//os parametros irão entrar no lugar dos ponto de interrogação
@@ -26,8 +27,11 @@ public class UsuarioDAO extends Conexao implements ICrud<Usuario>{
 			
 			int r = pst.executeUpdate();
 			
+			rs = pst.getGeneratedKeys();
+			
 			if(r>0)
-				msg="Cadastro realizado com sucesso!";
+				if(rs.next())
+					msg=String.valueOf(rs.getInt(1));
 			else
 				msg="Não foi possível cadastrar o usuário";			
 		}

@@ -1,10 +1,9 @@
 package br.com.projetoloja.dao;
 
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-
-
 
 import br.com.projetoloja.objeto.Contato;
 
@@ -21,7 +20,7 @@ public class ContatoDAO extends Conexao implements ICrud<Contato>{
 			abrirBanco();
 						
 //			vamos preparar o banco para realizar a consulta de inserção
-			pst = conectar.prepareStatement("insert into contato(telefone,email) values (?,?)");
+			pst = conectar.prepareStatement("insert into contato(telefone,email) values (?,?)",Statement.RETURN_GENERATED_KEYS);
 			
 //			Os dados que serão cadastrados no banco de dados devem ser parametrizados.
 //			isso evita a tentativa de sqlinject
@@ -34,8 +33,11 @@ public class ContatoDAO extends Conexao implements ICrud<Contato>{
 //			para pegar o retorno iremos criar uma variável do tipo int e testá-la
 			int r = pst.executeUpdate();
 			
+			rs = pst.getGeneratedKeys();
+			
 			if(r > 0)
-				msg = "Contato cadastrado com sucesso!";
+				if(rs.next())
+					msg = String.valueOf(rs.getInt(1));
 			else
 				msg = "Não foi possível cadastrar.";
 		}

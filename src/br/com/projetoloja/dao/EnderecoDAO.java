@@ -1,6 +1,7 @@
 package br.com.projetoloja.dao;
 
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,11 +17,13 @@ public class EnderecoDAO extends Conexao implements ICrud<Endereco>{
 			abrirBanco();
 			String sql = "insert into endereco(tipo,logradouro,numero,complemento,cep)values(?,?,?,?,?)";
 			//preparação para execução da consulta
-			pst = conectar.prepareStatement(sql);
+			pst = conectar.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
 			
 			//passagem dos parametros para a execução da consulta. 
 			//os parametros irão entrar no lugar dos ponto de interrogação
-			pst.setObject(1,objeto.getTipo());
+			
+			pst.setString(1,objeto.getTipo().toString());
+			
 			pst.setString(2, objeto.getLogradouro());
 			pst.setString(3,objeto.getNumero());
 			pst.setString(4, objeto.getComplemento());
@@ -28,8 +31,11 @@ public class EnderecoDAO extends Conexao implements ICrud<Endereco>{
 			
 			int r = pst.executeUpdate();
 			
+			rs = pst.getGeneratedKeys();
+			
 			if(r>0)
-				msg="Cadastro realizado com sucesso!";
+				if(rs.next())
+					msg=String.valueOf(rs.getInt(1));
 			else
 				msg="Não foi possível cadastrar o endereço";			
 		}

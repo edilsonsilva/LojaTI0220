@@ -20,10 +20,20 @@ import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.DefaultComboBoxModel;
 
+import br.com.projetoloja.dao.ClienteDAO;
 import br.com.projetoloja.dao.ContatoDAO;
+import br.com.projetoloja.dao.EnderecoDAO;
+import br.com.projetoloja.dao.FuncionarioDAO;
+import br.com.projetoloja.dao.UsuarioDAO;
+import br.com.projetoloja.objeto.Cliente;
 import br.com.projetoloja.objeto.Contato;
+import br.com.projetoloja.objeto.Endereco;
+import br.com.projetoloja.objeto.Funcionario;
 import br.com.projetoloja.objeto.Sexo;
 import br.com.projetoloja.objeto.TipoEndereco;
+import br.com.projetoloja.objeto.Usuario;
+import br.com.projetoloja.utils.Validacao;
+
 import javax.swing.JPasswordField;
 import javax.swing.JButton;
 import javax.swing.ImageIcon;
@@ -45,7 +55,7 @@ public class CadastroClienteFuncionario extends JFrame {
 	private JTextField txtNomeUsuario;
 	private JPasswordField txtSenha;
 	private JPasswordField txtConfirmarSenha;
-
+	private String caminhoFoto = "";
 		/**
 	 * Create the frame.
 	 */
@@ -305,6 +315,7 @@ public class CadastroClienteFuncionario extends JFrame {
 					File selecionado = arquivo.getSelectedFile();
 					System.out.println(selecionado.getAbsolutePath());
 					lblFotoUsuario.setIcon(new javax.swing.ImageIcon(selecionado.getAbsolutePath()));
+					caminhoFoto = selecionado.getAbsolutePath();
 				}
 				
 				
@@ -329,14 +340,145 @@ public class CadastroClienteFuncionario extends JFrame {
 				
 				
 				ct.setTelefone(txtTelefone.getText());
+				
+				
+				String resultado = Validacao.verificarEmail(txtEmail.getText());
+				
+				if(resultado=="")
+					ct.setEmail(txtEmail.getText());
+				else {
+					JOptionPane.showMessageDialog(null, resultado);
+					return; //sai da execução botão
+				}
+					
+				
+				
+				String idcontato = ctdao.cadastrar(ct);
+				
+				
+				Usuario us = new Usuario();
+				us.setNomeUsuario(txtNomeUsuario.getText());
+				
+				resultado = Validacao.verificarSenha(txtSenha.getText(), txtConfirmarSenha.getText());
+				if(resultado=="")
+					us.setSenha(txtSenha.getText());
+				else {
+					JOptionPane.showMessageDialog(null, resultado);
+					return;//Para de executar o código e sai da execução do botão
+				}
+				
+				
+				us.setFoto(caminhoFoto);
+				
+				UsuarioDAO usdao = new UsuarioDAO();
+				String idusuario = usdao.cadastrar(us);
+				
+				
+				Endereco end = new Endereco();
+				end.setTipo((TipoEndereco)cbxTipo.getSelectedItem());
+				end.setLogradouro(txtLogradouro.getText());
+				end.setNumero(txtNumero.getText());
+				end.setComplemento(txtComplemento.getText());
+				end.setCep(txtCEP.getText());
+				
+				EnderecoDAO enddao = new EnderecoDAO();
+				String idendereco = enddao.cadastrar(end);
+							
+				
+				Cliente cli = new Cliente();
+				cli.setNomeCliente(txtNomeCliente.getText());
+				cli.setCpf(txtCPFCliente.getText());
+				cli.setSexo((Sexo)cbxSexoCliente.getSelectedItem());
+				
+				cli.setContato(new Contato(Integer.parseInt(idcontato),null,null));
+				
+				cli.setEndereco(new Endereco(Integer.parseInt(idendereco),null,null,null,null,null));
+				
+				cli.setUsuario(new Usuario(Integer.parseInt(idusuario),null,null,null));
+				
+				ClienteDAO clidao = new ClienteDAO();
+				String r = clidao.cadastrar(cli);				
+				
+				JOptionPane.showMessageDialog(null, r);
+				
+				
+				txtNomeCliente.setText("");
+				txtCPFCliente.setText("");
+				txtLogradouro.setText("");
+				txtNumero.setText("");
+				txtComplemento.setText("");
+				txtCEP.setText("");
+				txtTelefone.setText("");
+				txtEmail.setText("");
+				txtNomeUsuario.setText("");
+				txtSenha.setText("");
+				txtConfirmarSenha.setText("");				
+			}
+			else {
+				System.out.println("Funcionário selecionado");
+				
+				//Realizar ao cadastro do contato. Para isso precisamos parssar 
+				//Os dados do formulário para a casa de objetos
+				Contato ct = new Contato();
+				ContatoDAO ctdao = new ContatoDAO();
+				
+				
+				ct.setTelefone(txtTelefone.getText());
 				ct.setEmail(txtEmail.getText());
 				
-				String r = ctdao.cadastrar(ct);
+				String idcontato = ctdao.cadastrar(ct);
 				
 				
-				JOptionPane.showMessageDialog(null, r);			
+				Usuario us = new Usuario();
+				us.setNomeUsuario(txtNomeUsuario.getText());
+				us.setSenha(txtSenha.getText());
+				us.setFoto(caminhoFoto);
+				
+				UsuarioDAO usdao = new UsuarioDAO();
+				String idusuario = usdao.cadastrar(us);
 				
 				
+				Endereco end = new Endereco();
+				end.setTipo((TipoEndereco)cbxTipo.getSelectedItem());
+				end.setLogradouro(txtLogradouro.getText());
+				end.setNumero(txtNumero.getText());
+				end.setComplemento(txtComplemento.getText());
+				end.setCep(txtCEP.getText());
+				
+				EnderecoDAO enddao = new EnderecoDAO();
+				String idendereco = enddao.cadastrar(end);
+							
+				
+				Funcionario fun = new Funcionario();
+				fun.setNomeFuncionario(txtNomeFuncionario.getText());
+				fun.setCpf(txtCPFFuncionario.getText());
+				fun.setSexo((Sexo)cbxSexoFuncionario.getSelectedItem());
+				fun.setCargo(txtCargo.getText());
+				
+				fun.setContato(new Contato(Integer.parseInt(idcontato),null,null));
+				
+				fun.setEndereco(new Endereco(Integer.parseInt(idendereco),null,null,null,null,null));
+				
+				fun.setUsuario(new Usuario(Integer.parseInt(idusuario),null,null,null));
+				
+				FuncionarioDAO fundao = new FuncionarioDAO();
+				String r = fundao.cadastrar(fun);				
+				
+				JOptionPane.showMessageDialog(null, r);
+				
+				
+				txtNomeFuncionario.setText("");
+				txtCPFFuncionario.setText("");
+				txtCargo.setText("");
+				txtLogradouro.setText("");
+				txtNumero.setText("");
+				txtComplemento.setText("");
+				txtCEP.setText("");
+				txtTelefone.setText("");
+				txtEmail.setText("");
+				txtNomeUsuario.setText("");
+				txtSenha.setText("");
+				txtConfirmarSenha.setText("");
 			}
 			
 			

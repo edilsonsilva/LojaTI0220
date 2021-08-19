@@ -26,7 +26,9 @@ public class ClienteDAO extends Conexao implements ICrud<Cliente> {
 			//os parametros irão entrar no lugar dos ponto de interrogação
 			pst.setString(1,objeto.getNomeCliente());
 			pst.setString(2, objeto.getCpf());
-			pst.setObject(3,objeto.getSexo());
+			
+			pst.setString(3,objeto.getSexo().toString());
+			
 			pst.setInt(4, objeto.getUsuario().getIdUsuario());
 			pst.setInt(5, objeto.getContato().getIdContato());
 			pst.setInt(6, objeto.getEndereco().getIdEndereco());
