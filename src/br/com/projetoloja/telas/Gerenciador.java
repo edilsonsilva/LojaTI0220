@@ -80,6 +80,16 @@ public class Gerenciador extends JFrame {
 		});
 		mnuAcao.add(mnuItemCadastroProduto);
 		
+		JMenuItem mnuItemCadastroVenda = new JMenuItem("Cadastro Venda");
+		mnuItemCadastroVenda.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				new TelaVenda().setVisible(true);
+				
+			}
+		});
+		mnuAcao.add(mnuItemCadastroVenda);
+		
 		JMenu mnuVisualizar = new JMenu("Visualizar");
 		jmbGerenciar.add(mnuVisualizar);
 		
