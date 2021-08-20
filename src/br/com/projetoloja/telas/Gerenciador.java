@@ -71,6 +71,13 @@ public class Gerenciador extends JFrame {
 		mnuAcao.add(mnuItemCadastro);
 		
 		JMenuItem mnuItemCadastroProduto = new JMenuItem("Cadastro Produto");
+		mnuItemCadastroProduto.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			
+				new CadastroProduto().setVisible(true);
+				
+			}
+		});
 		mnuAcao.add(mnuItemCadastroProduto);
 		
 		JMenu mnuVisualizar = new JMenu("Visualizar");
@@ -87,6 +94,19 @@ public class Gerenciador extends JFrame {
 		mnuVisualizar.add(mnuItemListarClientes);
 		
 		JMenuItem mnuItemListarProdutos = new JMenuItem("Listar Produtos");
+		mnuItemListarProdutos.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				new ListarProdutos().setVisible(true);
+			}
+		});
 		mnuVisualizar.add(mnuItemListarProdutos);
 	}
 }
+
+
+
+
+
+
+
+

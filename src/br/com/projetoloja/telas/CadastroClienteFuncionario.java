@@ -14,6 +14,8 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.awt.event.ActionEvent;
 import java.awt.Font;
+import java.awt.Image;
+
 import javax.swing.SwingConstants;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
@@ -317,7 +319,13 @@ public class CadastroClienteFuncionario extends JFrame {
 				if( r == 0) {
 					File selecionado = arquivo.getSelectedFile();
 					System.out.println(selecionado.getAbsolutePath());
-					lblFotoUsuario.setIcon(new javax.swing.ImageIcon(selecionado.getAbsolutePath()));
+					
+					ImageIcon img = new ImageIcon(selecionado.getAbsolutePath());
+					
+					lblFotoUsuario.setIcon(new ImageIcon(img.getImage().getScaledInstance(lblFotoUsuario.getWidth(), lblFotoUsuario.getHeight(), Image.SCALE_DEFAULT)));
+					
+					
+					
 					caminhoFoto = selecionado.getAbsolutePath();
 				}
 				

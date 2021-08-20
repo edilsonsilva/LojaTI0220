@@ -62,11 +62,11 @@ public class ProdutoDAO extends Conexao implements ICrud<Produto> {
 			while(rs.next()) {
 				listaProduto.add(
 						new Produto(
-								rs.getInt(0),
-								rs.getString(1),
+								rs.getInt(1),
 								rs.getString(2),
-								rs.getDouble(3),
-								rs.getString(4)
+								rs.getString(3),
+								rs.getDouble(4),
+								rs.getString(5)
 								)						
 						);
 			}			
