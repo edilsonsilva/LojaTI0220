@@ -69,6 +69,9 @@ public class CadastroClienteFuncionario extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
+		
+		setLocationRelativeTo(null);
+		
 		JPanel pnlEscolha = new JPanel();
 		pnlEscolha.setBounds(12, 12, 972, 58);
 		contentPane.add(pnlEscolha);

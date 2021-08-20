@@ -66,14 +66,14 @@ public class ClienteDAO extends Conexao implements ICrud<Cliente> {
 			while(rs.next()) {
 				listaCliente.add(
 						new Cliente(
-								rs.getInt(0),
-								rs.getString(1),
+								rs.getInt(1),
 								rs.getString(2),
-								(Sexo) rs.getObject(3),
-								rs.getDate(4),
-								(Usuario) rs.getObject(5),
-								(Contato) rs.getObject(6),
-								(Endereco) rs.getObject(7)
+								rs.getString(3),
+								Sexo.valueOf(rs.getString(4)),
+								rs.getDate(5),
+								new Usuario(rs.getInt(6),null,null,null),
+								new Contato(rs.getInt(7),null,null),
+								new Endereco(rs.getInt(8),null,null,null,null,null)
 								)						
 						);
 			}			
