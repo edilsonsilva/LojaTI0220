@@ -12,16 +12,31 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
+import br.com.projetoloja.dao.ClienteDAO;
+import br.com.projetoloja.dao.DetalheVendaDAO;
+import br.com.projetoloja.dao.FuncionarioDAO;
 import br.com.projetoloja.dao.ProdutoDAO;
+import br.com.projetoloja.dao.VendaDAO;
+import br.com.projetoloja.objeto.Cliente;
+import br.com.projetoloja.objeto.DetalheVenda;
 import br.com.projetoloja.objeto.Produto;
+import br.com.projetoloja.objeto.Venda;
+import br.com.projetoloja.objeto.Funcionario;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JComboBox;
 import javax.swing.SwingConstants;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JButton;
+import java.awt.Font;
+import java.awt.Color;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class TelaVenda extends JFrame {
 
@@ -29,7 +44,7 @@ public class TelaVenda extends JFrame {
 	private JTable table;
 	private JTextField txtPreco;
 	private JTextField txtQuantidade;
-
+	private int idCliente = 0, idFuncionario = 0, idvenda=0,idproduto=0;
 
 	/**
 	 * Create the frame.
@@ -42,6 +57,12 @@ public class TelaVenda extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
+		
+		
+		ClienteDAO cdao = new ClienteDAO();
+		FuncionarioDAO fdao = new FuncionarioDAO();
+		
+		
 		
 		JLabel lblSelecioneOCliente = new JLabel("Selecione o Cliente:");
 		lblSelecioneOCliente.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -72,12 +93,48 @@ public class TelaVenda extends JFrame {
 		contentPane.add(lblValorTotal);
 		
 		JComboBox cbxCliente = new JComboBox();
+		cbxCliente.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				idCliente = cbxCliente.getSelectedIndex()+1;
+				
+				
+			}
+		});
 		cbxCliente.setBounds(201, 7, 368, 24);
 		contentPane.add(cbxCliente);
+		
+		
+		for( int i = 0 ; i < cdao.listar().size() ; i++) {		
+			cbxCliente.addItem(cdao.listar().get(i).getNomeCliente());	
+		}
+		
 		
 		JComboBox cbxFuncionario = new JComboBox();
 		cbxFuncionario.setBounds(201, 49, 368, 24);
 		contentPane.add(cbxFuncionario);
+		
+		cbxFuncionario.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				idFuncionario = cbxFuncionario.getSelectedIndex()+1;
+				
+				
+			}
+		});
+		
+		for(int i =0 ; i < fdao.listar().size(); i++)
+			cbxFuncionario.addItem(fdao.listar().get(i).getNomeFuncionario());
+		
+		
+		
+		JLabel lblTotal = new JLabel("New label");
+		lblTotal.setForeground(new Color(139, 0, 0));
+		lblTotal.setFont(new Font("Arial", Font.BOLD, 26));
+		lblTotal.setHorizontalAlignment(SwingConstants.CENTER);
+		lblTotal.setBounds(439, 403, 197, 97);
+		contentPane.add(lblTotal);
+		
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(12, 131, 624, 249);
@@ -116,7 +173,16 @@ public class TelaVenda extends JFrame {
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				
+				txtQuantidade.setText("1");
 				txtPreco.setText(table.getModel().getValueAt(table.getSelectedRow(), 3).toString());
+				
+				Double valor = Double.parseDouble(txtQuantidade.getText())*Double.parseDouble(txtPreco.getText()); 
+				
+				lblTotal.setText("R$ "+valor.toString());
+				
+				
+				idproduto = Integer.parseInt(table.getModel().getValueAt(table.getSelectedRow(), 0).toString());
+				
 				
 			}
 			
@@ -150,22 +216,89 @@ public class TelaVenda extends JFrame {
 		scrollPane.setViewportView(table);
 	
 		txtPreco = new JTextField();
+		txtPreco.setEditable(false);
 		txtPreco.setBounds(178, 401, 114, 19);
 		contentPane.add(txtPreco);
 		txtPreco.setColumns(10);
 		
 		txtQuantidade = new JTextField();
+		
+		txtQuantidade.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyTyped(KeyEvent e) {
+				
+				
+				if(txtQuantidade.getText()==null || txtQuantidade.getText()=="" || txtQuantidade.getText().isEmpty()) {
+
+					return;
+				}
+				else {
+					Double valor = Double.parseDouble(txtPreco.getText())*Double.parseDouble(txtQuantidade.getText());
+					lblTotal.setText(valor.toString());
+					
+				}
+				
+				
+			}
+		});
 		txtQuantidade.setBounds(178, 440, 114, 19);
 		contentPane.add(txtQuantidade);
 		txtQuantidade.setColumns(10);
 		
-		JLabel lblTotal = new JLabel("New label");
-		lblTotal.setBounds(439, 403, 197, 97);
-		contentPane.add(lblTotal);
+		
 		
 		JButton btnFinalizarVenda = new JButton("Finalizar Venda");
+		btnFinalizarVenda.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				Venda v = new Venda();
+				v.setCliente(new Cliente(idCliente,null,null,null,null,null,null,null));
+				v.setFuncionario(new Funcionario(idFuncionario,null,null,null,null,null,null,null));
+				
+				VendaDAO vdao = new VendaDAO();
+				idvenda = Integer.parseInt(vdao.cadastrar(v));
+				
+				DetalheVenda dv = new DetalheVenda();
+				v.setIdVenda(idvenda);
+				
+				dv.setVenda(v);
+				
+				Produto p = new Produto();
+				p.setIdProduto(idproduto);
+				
+				dv.setProduto(p);
+				
+				dv.setQuantidade(Integer.parseInt(txtQuantidade.getText()));
+				
+				DetalheVendaDAO dtdao = new DetalheVendaDAO();
+				
+				
+				JOptionPane.showMessageDialog(null, dtdao.cadastrar(dv));
+				
+			}
+		});
 		btnFinalizarVenda.setBounds(178, 515, 310, 25);
 		contentPane.add(btnFinalizarVenda);
 		setLocationRelativeTo(null);
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
